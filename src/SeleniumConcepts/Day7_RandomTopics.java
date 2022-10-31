@@ -1,7 +1,12 @@
 package SeleniumConcepts;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.time.Duration;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -9,18 +14,22 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.http.HttpResponse;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.junit.Assert;
 
 //Q29. How to handle auto complete box in web driver?
+//Q31. How to find broken images in a page using Selenium web driver?
 //Q45. How to find an element using contains keyword and without using conventional locator strategies?
 //Q52. How to verify the presence of tool tips for a link?
 //Q54. What is the use of getOptions() method?
 //Q56. What is the use of deselectAll() method?
 //Q60. How to type text in a new line inside a textarea?
 //Q62. How do you simulate scroll down action?
+//Q66. Explain how you can login into any site if it's showing any authentication pop-up for username and password.
 //Q67. Explain how to assert text of webpage using selenium.
 //Q142. Multiple select list box window
 //Q144. Multiple select list box window-DESELECT
@@ -157,16 +166,82 @@ public class Day7_RandomTopics {
 		driver.quit();
 		
 	}
+	
+	public static void authenticationPopup() {
+		
+		System.setProperty("webdriver.chrome.driver","C:\\Selenium Data\\chromedriver_win32\\chromedriver.exe");
+		WebDriver driver=new ChromeDriver();
+		driver.get("https://admin:admin@the-internet.herokuapp.com/basic_auth");
+		String actual=driver.findElement(By.className("example")).getText();
+		if (actual.contains("Basic Auth")) {
+			System.out.println("Login through authentication pop-up successful");
+		}
+		else {
+			System.out.println("Login failed");
+		}
+		driver.quit();
+		
+	}
+	
+	public static void brokenImages() throws InterruptedException, AWTException {
+		
+		System.setProperty("webdriver.chrome.driver","C:\\Selenium Data\\chromedriver_win32\\chromedriver.exe");
+		WebDriver driver=new ChromeDriver();
+		driver.get("https://the-internet.herokuapp.com/broken_images");
+		//Thread.sleep(3000);
+		List <WebElement> imageLinks=driver.findElements(By.xpath("//div[@class='example']/img"));
+		//System.out.print(imageLinks);
+		
+		
+		for (int i=0;i<imageLinks.size()-1;i++){//For loop to iterate through all elements except the last one
+			Actions openContextMenu=new Actions(driver);//Actions class to perform contextClick action
+			openContextMenu.contextClick(imageLinks.get(i)).build().perform();//Passing value of i to open only the first 2 images
+				
+			/*Select and clicking options in context click menu is no working through actions.
+			openImage.sendKeys(Keys.ARROW_RIGHT).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.ARROW_DOWN).sendKeys(Keys.RETURN).build().perform();
+			So, we will use robot class instead.*/
+			
+			Robot selectOptions=new Robot();
+			selectOptions.keyPress(KeyEvent.VK_DOWN);
+			selectOptions.keyRelease(KeyEvent.VK_DOWN);
+			selectOptions.keyPress(KeyEvent.VK_DOWN);
+			selectOptions.keyRelease(KeyEvent.VK_DOWN);
+			selectOptions.keyPress(KeyEvent.VK_ENTER);
+			selectOptions.keyRelease(KeyEvent.VK_ENTER);			
+			
+		}
+		
+		
+		
+		Set<String> windowHandles=driver.getWindowHandles();
+		
+		//Using Iterator class to go through all window handles stored in set "windowHandles"
+		Iterator<String>handle=windowHandles.iterator();
+		String parentBrowser=handle.next();
+		String childBrowser1=handle.next();
+		String brokenImage1=driver.switchTo().window(childBrowser1).findElement(By.xpath("//h1")).getText();
+		String childBrowser2=handle.next();
+		String brokenImage2=driver.switchTo().window(childBrowser2).findElement(By.xpath("//h1")).getText();
+		System.out.println(brokenImage1+"\n"+brokenImage2);
+		
+		driver.quit();
+	}
+	
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws InterruptedException, AWTException {
 		
 		toolTips();
 		dropDown();
 		autoCompleteBox();
 		textArea();
 		multiSelectListBox();
+		authenticationPopup();
+		brokenImages();
 		
 		System.out.println("All methods passed!");
+		
+		
+		
 
 	}
 
