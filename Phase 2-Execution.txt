@@ -1,0 +1,142 @@
+Phase 2: Execution
+==================
+
+-Run tests using pom.xml (within eclipse)
+=============================================
+----pom.xml can be used 2 ways:
+------dependencies---dependencies will download required jars
+------running test cases(by running TesNG.xml through pom.xml), plug-ins needed
+(There are 2 kind of plug-ins needed)
+------Compiler plug-in (maven-compiler-plugin)
+------SureFire plug-in(maven-surefire-plugin)
+----Save and refresh the project
+----Run pom.xml as Maven test
+----First run will show some error like:
+Error: [ERROR] No compiler is provided in this environment. Perhaps you are running on a JRE rather than a JDK?
+Resolution: In Eclipse, Window>Preference>Java>Installed JREs. In installed JREs you will see jre installed instead of jdk.
+It should be jdk-<version> as default. jre will provide only few configuration files and maven project can't run on
+those files. To run Maven project we need jdk.
+----Successful run will run all the test cases from TestNG.xml in pom.xml
+
+
+-Run test cases through Maven CLI (command line interfaces)
+============================================================
+
+Pre-requisites
+---Install Maven on system (Maven is available in 2 ways-1|Eclipse Plug-in and 2|Maven for OS (windows,mac, unix, linux)
+---Steps to Install Maven on windows 
+1) From https://maven.apache.org/download.cgi>.zip file for windows and .tar for linux and unix or use following link:
+https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.zip
+2) Copy the apache-maven-3.8.6 from zipped folder to C: drive, so that it will be easier to find while configuring maven
+3) Copy the path of bin folder (C:\apache-maven-3.8.6\bin)
+4) Go to This PC>Propeties>Environment Variables>System variables>Path>Edit>Paste path of bin folder at the bottom
+5) In system variables create a new variable M2_HOME and paste path of Maven project folder before bin ie. C:\apache-maven-3.8.6\ and click OK to save.
+6) In cmd check mvn -version (C:\Users\hp>mvn -version)
+7) If maven is installed successfully, it will display something like this.
+C:\Users\hp>mvn -version
+Apache Maven 3.8.6 (84538c9988a25aec085021c365c560670ad80f63)
+Maven home: C:\apache-maven-3.8.6
+Java version: 18.0.1.1, vendor: Oracle Corporation, runtime: C:\Program Files\Java\jdk-18.0.1.1
+Default locale: en_IN, platform encoding: UTF-8
+OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
+
+Note: Step 5 is not mandatory but it will eliminate the chances of getting the same error message as earlier after
+first run of pom.xml file as Maven test.
+To eliminate it make sure you have Jdk bin and jdk lib paths setup in Environment Variables>System Variables>Path>Edit
+For more details refer link: http://roufid.com/no-compiler-is-provided-in-this-environment
+
+----Copy Project Location from Eclipse or from system- C:\Users\hp\eclipse-workspace\inetBankingV1_Framework
+----In cmd enter following commands:
+C:\Users\hp>cd C:\Users\hp\eclipse-workspace\inetBankingV1_Framework<----To access project
+
+C:\Users\hp\eclipse-workspace\inetBankingV1_Framework>dir<-----To access project structure
+
+C:\Users\hp\eclipse-workspace\inetBankingV1_Framework>mvn clean install<-----To run the tests
+T E S T S----->After this message the tests will run to completed
+BUILS SUCCESS--->Successful run of tests complete
+
+
+
+-Run test cases using run.bat file(an executable file)
+======================================================
+---Create run.bat file in project folder location (New>Text Document>Name it "run" and change extension to .bat (for batch file)
+---Edit this run.bat file in Notepad
+---Copy the following 2 commands in separate lines:
+	cd C:\Users\hp\eclipse-workspace\inetBankingV1_Framework
+	mvn clean install
+---Save the file.
+---Execute run.bat file by double clicking it
+---It will execute both the commands in cmd and run the designated tests to completion.
+
+
+Continuous integration part starts now.
+
+-Run test cases using Jenkins (Continuous Integration) using bat file
+======================================================================
+---Continuous intergation consists of 3 parts:
+Maven (Build Tool)
+Jenkins (Integration Tool)
+GIT/GitHUB (Repositories for test case and (dev itams) accessible to everyone)
+---Jenkins will always be installed in DevOps environment and not in QA environment
+---Download Jenkins LTS (long term support) version from https://jenkins.io/download/
+---Before installing Jenkins check jdk version instlled in C:/Program Files/Java folder. 
+jdk11 is needed for Jenkins. So, if required download it from Oracle Java Downloads and install it.
+---After installation copy bin folder path and in Environment variables>System variables>Path> Change jdk bin path from 18.x version to 11.x/bin
+---Also, add or change JAVA_HOME system variable path by copying the path before /bin.
+---Check version in cmd by running command "java -version"
+---If it still shows 18.x, return System Variables> Edit Path and delete "C:\Program Files\Common Files\Oracle\Java\javapath" variable.
+---Now cmd should show java -version 11.x. If it does then proceed with installation of Jenkins and select jdk 11 path when prompted.
+
+---Access Jenkins on http://localhost:8080/
+---Enter the secret key provided by jenkins for first authentication. It's located somewhere in C:/Program Data (which is hidden folder. Select show hidden items from View)
+---Set and save your credentials for login.
+http://localhost:8080/
+username: admin password: admin
+
+2 ways to execute project in Jenkins:
+-------------------------------------
+1) Execute project using free style project (run.bat file)<---Only for practicing. 
+---New Item>Item Name (project name)>Freestyle Project>Build>And copy following 2 lines in build field:
+
+cd C:\Users\hp\eclipse-workspace\inetBankingV1_Framework
+run.bat
+
+---Apply and Save
+---After saving, if any change is needed click the Project on Dashboard page and select Configure.
+
+---To run, use the triangle drop-down next to project to select Build Now or click the project and select Build Now from left pane.
+---Jenkins provide seamless execution. It means we will not get to see any screens while the tests are being executed.
+Only a few logs will be displayed.
+
+Problem: Since we are seeing screens i am unable to respond on google analytics pop-ups for this site and that's why all the tests are failing.
+
+
+2) Execute project using Maven (pom.xml)<----------In realtime we use this approach
+Pre-requisites:
+---------------
+Two additional configurations is needed in Jenkins to get it working:
+---Install Maven plugin in Jenkins. To do this on Jenkins homepage click Manage Jenkins>Manage Plugins>Available Tab>
+Type Maven and select all that have "Maven" in their name>Click "Install without restart" button
+Once all the Maven plug-ins are installed restart jenkins
+---Next go to Manage Jenkins>Global Tool Configuration>Add JDK>Uncheck install automatically and copy jdk path
+from JAVA_HOME system variable of Environment variables. Click Apply and Save
+(If JAVA_HOME system variable doesn't exist, we have to create it and then copy the jdk path for jenkins)
+
+Steps:
+-------
+---New Item>Enter name of the project>Maven Project>Ok
+---Go to Build section>Specify path for pom.xml in Root POM (C:\Users\hp\eclipse-workspace\inetBankingV1_Framework\pom.xml)
+and enter Goals and options as "clean install"
+---In Post-build actions, select Editable Email Notification and enter SMTP details as required to schedule team notifications from Jenkins
+
+Note: As of now for project path we are providing our local machine path, but in realtime this is not how is should be.
+This is because jenkins will be installed on DevOps server/machines and they will not be able to access project from QAs local machine.
+So, the project and daily changes should be updated to a global repository that is accessible to DevOps form where they can pick-up the
+project and use it in Jenkins to perform continuos integration.
+There can be 2 ways to do it-
+-One to put project in Jenkins server itself (small organizations with lesser budget does this)
+-Or to have a global repository like GIT/GITHUB from where everyone can access the project.
+This is where next phase of Maintenance will come into picture.
+
+
+

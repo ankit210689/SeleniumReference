@@ -1,0 +1,115 @@
+Phase 3-Maintenance
+====================
+
+GIT-Local Repository
+GITHUB-Remote/Global Repository
+
+2 way communication:
+1) Eclipsys->GIT->GITHUB is called Check-in process
+2) GITHUB->GIT->Eclipsys is called Check-out process (this way we can download other QAs automation scripts for verification and learning purposes)
+
+
+There are different names given to different types of operations:
+Eclipsys->GIT is called Staging
+GIT->GITHUB is called Push
+GITHUB->GIT is called Pull
+GIT->Eclipsys is called Update
+
+Creating repository in GITHUB
+==============================
+
+Pre-requisites
+--------------
+1) Install GIT in your local system
+
+---Go to https://git-scm.com/download/win/ and download the latest version
+---Run the downloaded exe file to install. Proceed with default options on all screens except:
+On screen 6 select "Use the Nano editor by default" from drop-down.
+On Adjusting your PATH environment screen select "Use Git from Git Bash Only"
+After installation is completed select "Launch Git Bash" to launch the application on desktop. It will open a command prompt like window that will look like:
+hp@ANKIT-PC MINGW64 ~
+$
+
+---Check the folder structure of Git after installation ie. C:\Program Files\Git\bin\
+---To validate the successful installation of GIT go to file explorer> Any drive (C, D, E or F)>Right click to check available options
+If "Git GUI Here" and "Git Bash Here" are available as options, GIT installation was successful.
+
+2) Create an account on Github
+
+---Go to https://github.com/
+---Sign-up and select required option for free account. (Email ID: ankit210689@gmail.com Username: ankit210689 Password: Ankit1github$)
+---Login and Create (New) Repository. Enter Reporsitory name as project name in Eclipse (check the name availability),
+Enter Description and select Public or Private as needed (A public repository will be accessible and downloadable to anyone using the URL
+to access it. Private repositories restrict the access of repository unless you share the access with others. Organizations use
+Private Repository) and click Create Repository to get a URL to your project.
+---https://github.com/ankit210689/inetBankingV1_Framework.git----->This is the URL of Remote repository
+---Currently this is an empty repository
+
+Workflow
+--------
+Working Directory---------->Staging Area------------>Git Repository------------->Github Repository
+
+               Add Command              Commit Command             Push Command
+Untracked File------------->Tracked File------------>Committed File------------->Remote File
+
+Here,
+Working Directory is Eclipse
+
+GIT Commands to perform various operations
+============================================
+-Create Local Repository using GIT application
+---Go to project folder (C:\Users\hp\eclipse-workspace\inetBankingV1_Framework)
+---Right click and select Git Bash Here. In this command prompt like window we will execute all our GIT commands.
+git init--->To create an empty GIT Repository ie. local repository (Running this command shows message "Initialized empty Git repository in C:/Users/hp/eclipse-workspace/inetBankingV1_Framework/.git/")
+git remote add origin "https://github.com/ankit210689/inetBankingV1_Framework.git"--->To link local and remote repository run this command. In "" is the project URL in remote repository.
+
+git status--->To get the folder that have files ready to commit in GIT repository (folders in red means they have files that are ready to commit)
+
+git add -A--->To add ready to commit files in working directory to staging area (Now if we run "git status" command it will show all files in green color) 
+
+clear---->To clear the cmd window
+
+Next 2 commands will be one time entry only during the first run
+git config --global user.name "ankit210689"
+git config --global user.email "ankit210689@gmail.com"
+
+git commit -m "This is my first commit!"---> To commit all files to staging area ie. GIT repository (In "" we should type a message that we can differentiate from different commits we do during the day)
+(Running status command now will display message "nothing to commit, working tree clean" as there is no untacked files in GIT repository)
+
+(git init, git remote add origin "<github project url>", git config --global user.name and git config --global user.email are run only the first time. They are not needed once the project files are commited to staging area)
+
+Now everything is ready in GIT repository and we have to push our project/code to GITHUB repository.
+
+git push -u origin master--->To push files from local repository to remote repository.
+It will ask for your GITHUB credentials. Once confirmed it will push the files from GIT to GITHUB.
+
+Go to Github and click on project name to refresh and check all the files pushed from GIT to GITHUB. It will also show the message entered with commit command.
+-----------------------
+To check the pull command we have created a testfile.txt file in remote repository (Create New File>Enter file name>Enter text>Commit File)
+As this change is made in remote repository it is not yet reflected in local repository. So, we have to execute pull command to get the new files.
+
+git pull origin master---->To pull the new file added to prject in GITHUB to GIT.
+When done it will show the information about the file/s pulled from remote repository and we can check the new files added in local project location and Eclipsys.
+----------------------
+
+Now we will make some changes to this testfile.txt and push this updated file to GITHUB using following commands.
+
+git status--->Will show the modified file in red
+git add -A--->Add the modified file to staging area
+git commit -m "This is my second commit-testfile.txt modified"--->commit modified file into local repository
+git push -u origin master--->Push this modified file to remote repository
+Check the updated file and commit message for this file in GITHUB.
+
+So, add, commit, push and pull are the most common and important commands that we will use.
+
+
+Running GITHUB Code in Jenkins
+===============================
+---In Jenkins create New Item>Enter Item Name "inetBankingV1-Framework-GITHUB">Maven Project>Ok
+---Next in Source Code Management select Git and paste the GITHUB repository URL for project ("https://github.com/ankit210689/inetBankingV1_Framework.git")
+---In Build section, in Root POM type pom.xml and in Goals and options type "clean install" 
+---Apply and Save
+---Also in Dashboard, click Manage Jenkins>Global Tool Configuration>Go to Git and copy path "C:\Program Files\Git\bin\git.exe" in Path to Git Executable field>Apply and Save
+---If it's a private repository we need to enter credentials. But since ours in public repository no credential is needed
+---Also, check the branch specifier and compare to the branch selected for the project in GITHUB. Its */master for both, so proceed without any change.
+---Execute this project from Dashboard

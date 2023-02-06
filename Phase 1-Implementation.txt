@@ -1,0 +1,145 @@
+Framework Creation:
+====================
+
+Framework advantages-
+1) Maintainability
+2) Reusability
+
+Access Details for Guru99 e-Banking application:
+
+URl: https://www.demo.guru99.com/V1/index.php
+
+User ID :	mngr432073
+Password :	ypEhysy
+
+Phases/Stages of Framework creation
+------------------------------------
+1) Implementation
+2) Execution
+3) Maintenance
+
+
+Phase 1: Implementation
+=======================
+
+-Create Maven project (Basic maven project that must contain src/main/java and src/test/java packages)
+======================
+---Create different packages in src/test/java for items likes Page Objects, test cases, test data, utilities etc.
+
+---Create different folders in project for items like Configuration, Drivers, Screenshots etc.
+
+-Update pom.xml by adding required dependencies (We can download all dependencies for pom.xml from https://mvnrepository.com/)
+===============
+---Copy the required drivers like chromedriver, iedriver etc. in Drivers folder
+
+-Create Page objects class for Login Page and create all the required objects for necessary webelements on login page.
+==========================================
+----Pagefactory class has been used. It enables the use of initElements method to initialize web pages
+----It also enables the use of @FindBy annotation with different location strategies to find web elements
+and perform actions on them.
+----@CacheLookup is a non-mandatory annotation that instructs selenium (initElements method) to keep a cache of 
+the webelement instead of searching for the webelement every time from the webpage
+
+
+-Create the test case
+======================
+Test case have 3 methods:
+----setup()->We specify all pre-requisites. This should be executed @BeforeClass.
+----test()->Actual test steps will be written. This should be executed in @Test annotation
+----teardown()->We specify close or quit commands ie. exiting activities. This should be executed @AfterClass.
+
+-----setup() and teardown() methods are common for all test cases. So, we will create a BaseClass with those 2 methods
+that can be extended for use throughout all the test cases.
+
+URl: https://demo.guru99.com/V1/index.php
+User ID :	mngr432073
+Password :	ypEhysy
+
+-
+
+Automated Test Cases-Test Case 1) Verify Login
+----------------------------------------------
+Steps:
+-----
+i) Open URL
+ii) Enter valid UserID
+iii) Enter valid password
+iv) Click on Login
+
+Expected Result
+----------------
+Login should be successfull. Hope page should open.
+
+Data Required
+-------------
+User ID :	mngr432073
+Password :	ypEhysy
+
+
+
+-Add logs to test case
+=======================
+log4j-Java based logging framework. It needs 2 parts to link with Maven project.
+
+-----log4j.jar---->Dependancy added to pom.xml to download the required log4j.jar file/s
+-----log4j.properties---->Added file and created Logger method in BaseClass to be used in test cases to log test results
+Logger.getLogger() method is now found under org.apache.logging.log4j.LogManager package.
+(Refer https://logging.apache.org/log4j/2.x/manual/migration.html for more details)
+
+
+
+-Read common values from properties file
+=========================================
+--------"config.properties"-File created to maintain all variable values so that we don't have to hardcode the
+values for those variables in BaseClass itself. eg. values for variables like username, password, driver etc.
+--------"ReadConfig.java"-Utility file created to read data from config.properties file
+--------"Baseclass" will then use "ReadConfig.java" file to get all variable values when called from the test cases
+----config.properties-Created in ConfigurationFiles folder
+----ReadConfig.java-Create under butler packages named utilities (com.inetbanking.utilities) in src/test/java
+----Baseclass-It exists in testcases package. We just have to modify it by removing hard coded values and get those values
+dynamically from ReadConfig.java.
+
+
+
+-Run the test case on desired browser
+======================================
+----We have to create an XML file ie. TestNG.xml which will be kept in project home directory
+----In test case (BaseClass) we have to create a method Launch() for Launching browser and then the required test methods.
+The XML file we created will transfer the browser as a parameter like chrome and edge as called.
+
+
+-Add Extent Report
+===================
+---Pre-requisites are
+1) jars-Extent report dependecy will be used
+2) extent-config.xml-Will be kept in project home directory.(Used the configuration for this file provided on https://github.com/anshooarora/extentreports-java/blob/master/extent-config.xml)
+3) listener class (Reporting.java)
+4) Add entry for listener class in TestNG.xml file.
+---From now on we have to run our test case from TestNG.xml only.
+
+
+-Create Data Driven test case
+=============================
+-----Pre-requisites are
+1) Apache poi jars(Add dependency in pom.xml)
+2) XLS File (test data)-User ID:mngr433860 Password:hytuhas, User ID:mngr432073 Password:ypEhysy and User ID:mngr433861 Password:EzAjypy
+3) XLUtils.java file creation-It will contain user defined methods to count the number of columns and rows etc.
+4)@DataProvider annotation from TestNg will be used in test case to fetch data from excel sheet
+
+-Adding new test case/s
+======================
+Now since the framework is ready we just have to perform following 2 steps to create a new test case:
+----Page object class-AddCustomerPage.java
+----Test case creation and add the test case to TestNg.xml
+Optional Setup 
+----Test data file (if required)
+Test Case2) Add customer test case
+
+Note: The complete framework stucture is generally pre-existing in organization or taken care of by senior team members
+and the other team members just have to create the test cases in those frameworks. But everyone should have the undertsanding
+of the framework they are working on to find the required components when needed.
+
+Imp. Note: How do you run only failed test cases after fixing them?
+---------
+--> There is a "testng-failed.xml" file generated in "test-output" folder after every run. Open it and run this xml file to
+run the test cases that failed in last run.
